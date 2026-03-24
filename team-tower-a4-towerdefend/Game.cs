@@ -5,28 +5,37 @@ using System.Numerics;
 // The namespace your code is in.
 namespace MohawkGame2D
 {
-    /// <summary>
-    ///     Your game code goes inside this class!
-    /// </summary>
     public class Game
     {
         // Place your variables here:
+        public Vector2 windowSize;
+        public Vector2 windowCentre;
+        string windowTitle;
+        int windowFPS;
+        Scene Scene;
 
-
-        /// <summary>
-        ///     Setup runs once before the game loop begins.
-        /// </summary>
         public void Setup()
         {
 
+            // CONFIG
+            windowSize = new Vector2(512*3, 512*3);
+            windowCentre = new Vector2(windowSize.X / 2, windowSize.Y / 2);
+
+            windowTitle = "Tower Defend Game By Christopher & Jose";
+            windowFPS = 60;
+
+            // Window
+
+            Window.SetSize((int)windowSize.X, (int)windowSize.Y);
+            Window.SetTitle(windowTitle);
+            Window.TargetFPS = windowFPS;
+            Scene = new Scene(this);
         }
 
-        /// <summary>
-        ///     Update runs every frame.
-        /// </summary>
         public void Update()
         {
-
+            Window.ClearBackground(new Color(50, 50, 100));
+            Scene.Update();
         }
     }
 
