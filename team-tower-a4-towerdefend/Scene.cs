@@ -57,9 +57,10 @@ namespace MohawkGame2D
                 {
                     TileEntity currentTile = playArea[x][y];
                     
-                    playArea[x][y].position = new Vector2(shopWidth + x * currentTile.GetSize().X, y * currentTile.GetSize().Y);
+                    playArea[x][y].position = FindTileScreenPosition(new Vector2(x, y));
                 }
             }
+            SetMovementPaths();
 
         }
         public void Update() // Control all things within the scene
@@ -128,6 +129,10 @@ namespace MohawkGame2D
 
         // Tile related
         
+        public Vector2 FindTileScreenPosition(Vector2 gridSpot) // Turns a grid position into screen coordinates
+        {
+            return new Vector2(gridSpot.X * playArea[(int)gridSpot.X][(int)gridSpot.Y].GetSize().X + shopWidth, gridSpot.Y * playArea[(int)gridSpot.X][(int)gridSpot.Y].GetSize().Y);
+        }
         public bool CheckTileOccupied(Vector2 gridSpot)
         {
             if (playArea[(int)gridSpot.X][(int)gridSpot.Y] is Tower)
@@ -146,7 +151,7 @@ namespace MohawkGame2D
                 RemoveEntity(playArea[(int)gridSpot.X][(int)gridSpot.Y]); // First remove tile
                 playArea[(int)gridSpot.X][(int)gridSpot.Y] = new Tower(this);
                 TileEntity currentSpot = playArea[(int)gridSpot.X][(int)gridSpot.Y]; // Set reference to what tile entity the loop is on
-                playArea[(int)gridSpot.X][(int)gridSpot.Y].position = new Vector2(gridSpot.X*currentSpot.GetSize().X+shopWidth, gridSpot.Y*currentSpot.GetSize().Y);
+                playArea[(int)gridSpot.X][(int)gridSpot.Y].position = FindTileScreenPosition(gridSpot);
 
                 AddEntity(playArea[(int)gridSpot.X][(int)gridSpot.Y]);
             } else
@@ -155,6 +160,30 @@ namespace MohawkGame2D
             }
 
 
+        }
+        public void SetMovementPaths() // Not finished
+        {
+            Vector2[] moveTileMap = [// Ordered in rows
+                new Vector2(11, 0), 
+                new Vector2(0,1), new Vector2(1,1), new Vector2(2,1), new Vector2(3,1), new Vector2(4,1), new Vector2(5,1), new Vector2(6,1), new Vector2(7,1), new Vector2(8,1), new Vector2(9,1), new Vector2(10,1), new Vector2(11,1),
+                new Vector2(0,2), new Vector2(11,2),
+                new Vector2(0,3), new Vector2(1,3), new Vector2(2,3), new Vector2(3,3), new Vector2(8,3), new Vector2(9,3), new Vector2(11,3),
+                new Vector2(9,4), new Vector2(11,4),
+                new Vector2(0,5), new Vector2(1,5), new Vector2(2,5), new Vector2(9,5), new Vector2(11,5),
+                new Vector2(0,6), new Vector2(2,6), new Vector2(9,6), new Vector2(10,6), new Vector2(11,6),
+                new Vector2(0,7), new Vector2(2,7),
+                new Vector2(0,8), new Vector2(2,8), new Vector2(3,8), new Vector2(8,8), new Vector2(9,8), new Vector2(10,8), new Vector2(11,8),
+                new Vector2(0,9), new Vector2(11,9),
+                new Vector2(0,10), new Vector2(1,10),new Vector2(2,10),new Vector2(3,10),new Vector2(4,10),new Vector2(5,10),new Vector2(6,10),new Vector2(7,10),new Vector2(8,10),new Vector2(9,10),new Vector2(10,10),new Vector2(11,10),
+                new Vector2(0,11)
+            ];
+            for (int i = 0; i < moveTileMap.Length; i++)
+            {
+                RemoveEntity(playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y]); // Remove all tile entities for replacement
+                playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y] = new MovementTile(this, "", "");
+                playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y].position = FindTileScreenPosition(moveTileMap[i]); // Update position
+                AddEntity(playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y]); // Officially add the entity to the entity list
+            }
         }
         public Vector2 CheckMouseHoverTile()
         {
