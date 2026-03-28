@@ -8,13 +8,13 @@ namespace MohawkGame2D
     internal class Entity
     {
         public Scene Scene;
-
+        public Texture2D sprite;
         public Vector2 position;
 
         // All entities (subclasses of Entity) require : base(setScene)
         public Entity(Scene setScene)
         {
-            this.Scene = setScene;
+            Scene = setScene;
         }
         public virtual void Update()
         {

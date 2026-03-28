@@ -25,6 +25,12 @@ namespace MohawkGame2D
         public TileEntity[][] playArea;
         public float shopWidth;
 
+        public int gridTileSize;
+        public int graphicsSize;
+
+        public float spawnTimer;
+        public float spawnInterval;
+
         public Scene(Game setGame) // Initialize
         {
             // Variables that must be initialized when creating a new scene
@@ -37,6 +43,10 @@ namespace MohawkGame2D
             playAreaHeight = 12;
             playArea = new TileEntity[playAreaWidth][];
             shopWidth = 288;
+
+            gridTileSize = 32; // Square
+            graphicsSize = 3;
+
             Console.WriteLine(playArea.Length);
             for (int i = 0; i < playArea.Length; i++) // Init the nested arrays
             {
@@ -59,7 +69,15 @@ namespace MohawkGame2D
                     
                     playArea[x][y].position = FindTileScreenPosition(new Vector2(x, y));
                 }
+
             }
+
+            spawnTimer = 2.5f;
+            spawnInterval = 0;
+
+            // Load audio files here
+
+
             SetMovementPaths();
 
         }
@@ -93,6 +111,9 @@ namespace MohawkGame2D
                     entities.Remove(entity);
                 }
                 removeEntityQueue.Clear();
+
+                SpawnEnemies();
+                DrawEnemyCount();
             }
 
             // Game Pause
@@ -126,16 +147,63 @@ namespace MohawkGame2D
         {
             removeEntityQueue.Add(setEntity);
         }
-
+        public void SpawnEnemies()
+        {
+            // Reduce timer
+            spawnInterval -= Time.DeltaTime;
+            if (spawnInterval <= 0)
+            {
+                AddEntity(new Enemy(this));
+                spawnInterval = spawnTimer; // Reset cooldown
+            }
+        }
         // Tile related
-        
+        public int GetTileSize()
+        {
+            return gridTileSize * graphicsSize;
+        }
+        public Vector2 GetTileSizeBounds() // Same as GetSize but with Vector2
+        {
+            return new Vector2(gridTileSize * graphicsSize, gridTileSize * graphicsSize);
+        }
+        public Vector2 GetTileCentre()
+        {
+            float size = GetTileSize();
+            return new Vector2(size / 2, size / 2);
+        }
+        public Vector2 GetTileCentreScreen(TileEntity SetTileEntity)
+
+        {
+            float size = GetTileSize();
+            return new Vector2(SetTileEntity.position.X + (size / 2), SetTileEntity.position.Y + (size / 2));
+        }
+        public Vector2[] GetTileBounds(TileEntity SetTileEntity)
+        {
+            return new Vector2[] { new Vector2(SetTileEntity.position.X, SetTileEntity.position.Y), new Vector2(SetTileEntity.position.X + gridTileSize, SetTileEntity.position.Y + gridTileSize) };
+        }
+        public Vector2 GetGridSpot(TileEntity SetTileEntity)
+        {
+            for (int x = 0; x < playArea.Length; x++)
+            {
+                for (int y = 0; y < playArea[x].Length; y++)
+                {
+                    TileEntity currentTile = playArea[x][y];
+                    if (currentTile == SetTileEntity)
+                    {
+                        return new Vector2(x, y); // Return a Vector2 that gives the x and y of its spot in TileEntity playArea in Scene
+                    }
+                }
+            }
+            return new Vector2(0, 0); // This is in case of error
+        }
         public Vector2 FindTileScreenPosition(Vector2 gridSpot) // Turns a grid position into screen coordinates
         {
-            return new Vector2(gridSpot.X * playArea[(int)gridSpot.X][(int)gridSpot.Y].GetSize().X + shopWidth, gridSpot.Y * playArea[(int)gridSpot.X][(int)gridSpot.Y].GetSize().Y);
+            Vector2 tileSizeBounds = GetTileSizeBounds();
+            return new Vector2(gridSpot.X * tileSizeBounds.X + shopWidth, gridSpot.Y * tileSizeBounds.Y);
         }
         public bool CheckTileOccupied(Vector2 gridSpot)
         {
-            if (playArea[(int)gridSpot.X][(int)gridSpot.Y] is Tower)
+            if (playArea[(int)gridSpot.X][(int)gridSpot.Y] is Tower || playArea[(int)gridSpot.X][(int)gridSpot.Y] is MovementTile)
             {
                 return true;
             }
@@ -158,14 +226,12 @@ namespace MohawkGame2D
             {
                 Console.WriteLine("There is already a tower there!");
             }
-
-
         }
         public void SetMovementPaths() // Not finished
         {
             Vector2[] moveTileMap = [// Ordered in rows
                 new Vector2(11, 0), 
-                new Vector2(0,1), new Vector2(1,1), new Vector2(2,1), new Vector2(3,1), new Vector2(4,1), new Vector2(5,1), new Vector2(6,1), new Vector2(7,1), new Vector2(8,1), new Vector2(9,1), new Vector2(10,1), new Vector2(11,1),
+                new Vector2(0,1), new Vector2(1,1), new Vector2(2,1), new Vector2(3,1), new Vector2(4,1), new Vector2(5,1), new Vector2(6,1), new Vector2(7,1), new Vector2(8,1), new Vector2(9,1), /*new Vector2(10,1) TEMP REMOVE ,*/ new Vector2(11,1),
                 new Vector2(0,2), new Vector2(11,2),
                 new Vector2(0,3), new Vector2(1,3), new Vector2(2,3), new Vector2(3,3), new Vector2(8,3), new Vector2(9,3), new Vector2(11,3),
                 new Vector2(9,4), new Vector2(11,4),
@@ -180,10 +246,12 @@ namespace MohawkGame2D
             for (int i = 0; i < moveTileMap.Length; i++)
             {
                 RemoveEntity(playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y]); // Remove all tile entities for replacement
-                playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y] = new MovementTile(this, "", "");
+                playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y] = new MovementTile(this); // Set the movement tile to grid
                 playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y].position = FindTileScreenPosition(moveTileMap[i]); // Update position
                 AddEntity(playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y]); // Officially add the entity to the entity list
             }
+
+            // Set the spawn tiles    
         }
         public Vector2 CheckMouseHoverTile()
         {
@@ -194,7 +262,7 @@ namespace MohawkGame2D
                 for (int y = 0; y < playArea[x].Length; y++)
                 {
                     Vector2 currentTile = playArea[x][y].position;
-                    Vector2 currentTileSize = playArea[x][y].GetSize();
+                    Vector2 currentTileSize = GetTileSizeBounds();
 
                     // Check if mouse pos is within the current tile borders
                     if (mousePos.X >= currentTile.X && mousePos.Y >= currentTile.Y && mousePos.X < currentTile.X + currentTileSize.X && mousePos.Y < currentTile.Y + currentTileSize.Y)
@@ -223,6 +291,20 @@ namespace MohawkGame2D
             }
         }
 
+        // UI related
+
+        public void DrawEnemyCount()
+        {
+            int counter = 0;
+            foreach (Entity Entity in entities)
+            {
+                if (Entity is Enemy Enemy)
+                {
+                    counter++;
+                }
+            }
+            Text.Draw($"{counter}", new Vector2(0, 0));
+        }
         // Pausing
 
         public void GamePause() // Set flag for pausing game in update loop

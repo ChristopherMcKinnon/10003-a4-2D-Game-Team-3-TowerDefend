@@ -21,7 +21,7 @@ namespace MohawkGame2D
             windowSize = new Vector2(512*3, 512*3);
             windowCentre = new Vector2(windowSize.X / 2, windowSize.Y / 2);
 
-            windowTitle = "Tower Defend Game By Christopher & Jose";
+            windowTitle = "Tower Defend Game By Christopher, Jose, and Olsen";
             windowFPS = 60;
 
             // Window

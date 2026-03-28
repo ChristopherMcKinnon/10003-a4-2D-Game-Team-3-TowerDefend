@@ -5,14 +5,12 @@ using System.Numerics;
 
 namespace MohawkGame2D
 {
-    internal class Tower : TileEntity
+    internal class SpawnTile : TileEntity
     {
-
-        public Tower(Scene setScene) : base(setScene) // Entity requires Scene
+        public SpawnTile(Scene setScene) : base(setScene)
         {
-            this.sprite = Graphics.LoadTexture("..\\..\\..\\..\\..\\10003-a4-2D-Game-Team-3-TowerDefend\\team-tower-a4-towerdefend\\Assets\\TowerCommon.png");
-        }
 
+        }
         public override void StdDraw()
         {
             Graphics.Scale = Scene.graphicsSize;

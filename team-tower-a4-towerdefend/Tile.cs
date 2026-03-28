@@ -19,7 +19,7 @@ namespace MohawkGame2D
         }
         public override void StdDraw()
         {
-            Graphics.Scale = 3;
+            Graphics.Scale = Scene.graphicsSize;
             Graphics.Draw(sprite, this.position);
         }
     }
