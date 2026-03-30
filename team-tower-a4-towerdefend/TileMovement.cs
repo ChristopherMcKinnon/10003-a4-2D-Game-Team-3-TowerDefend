@@ -5,22 +5,20 @@ using System.Numerics;
 
 namespace MohawkGame2D
 {
-    internal class Tile : TileEntity
+    internal class TileMovement : TileEntity
     {
-
-        public Tile(Scene setScene) : base(setScene) // Entity requires Scene
+        public TileMovement(Scene setScene) : base(setScene)
         {
-            this.sprite = Scene.textures["TileBase"];
+            sprite = Scene.textures["MovementTile"];
         }
-
         public override void Update()
         {
-            
         }
         public override void StdDraw()
         {
             Graphics.Scale = Scene.graphicsSize;
             Graphics.Draw(sprite, this.position);
         }
+        
     }
 }

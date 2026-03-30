@@ -5,12 +5,14 @@ using System.Numerics;
 
 namespace MohawkGame2D
 {
-    internal class SpawnTile : TileEntity
+    internal class TowerTrishot : TileEntity
     {
-        public SpawnTile(Scene setScene) : base(setScene)
-        {
 
+        public TowerTrishot(Scene setScene) : base(setScene) // Entity requires Scene
+        {
+            this.sprite = Scene.textures["TowerTrishot"];
         }
+
         public override void StdDraw()
         {
             Graphics.Scale = Scene.graphicsSize;

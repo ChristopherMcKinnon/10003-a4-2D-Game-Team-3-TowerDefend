@@ -7,13 +7,16 @@ namespace MohawkGame2D
 {
     internal class Enemy : Entity
     {
-        float moveSpeed;
-        Vector2 direction;
-        Vector2 velocity;
-        Vector2 spawnPos;
-        public List<MovementTile> tilePathMoved;
-        public MovementTile nextTile;
-        public MovementTile currentTile;
+        public float moveSpeed;
+        public float health;
+        public float healthFactor;
+        public float moneyReward;
+        public Vector2 direction;
+        public Vector2 velocity;
+        public Vector2 spawnPos;
+        public List<TileMovement> tilePathMoved;
+        public TileMovement nextTile;
+        public TileMovement currentTile;
         public Vector2 currentTileGridSpot;
         public float graphicsSize;
         public Vector2 centrePos;
@@ -22,15 +25,17 @@ namespace MohawkGame2D
 
         public Enemy(Scene setScene) : base(setScene)
         {
-            tilePathMoved = new List<MovementTile>(); // All tiles previously moved on (touched)
+            tilePathMoved = new List<TileMovement>(); // All tiles previously moved on (touched)
             hitMid = false; // Flag for hitting the middle of the movement square
             graphicsSize = 2f;
-            this.sprite = Graphics.LoadTexture("..\\..\\..\\..\\..\\10003-a4-2D-Game-Team-3-TowerDefend\\team-tower-a4-towerdefend\\Assets\\EnemyCommon.png");
+            this.sprite = Scene.textures["EnemyCommon"];
+            this.healthFactor = 1f;
+            this.health = 10f * healthFactor;
             this.moveSpeed = 40f;
             this.velocity = new Vector2(moveSpeed, moveSpeed); // Moves at the same pace in all cardinal directions
             this.direction = new Vector2(-1, 1);
 
-            if (Scene.playArea[11][1] is MovementTile MovementTile)
+            if (Scene.playArea[11][1] is TileMovement MovementTile)
             {
                 nextTile = MovementTile;
             }
@@ -70,21 +75,27 @@ namespace MohawkGame2D
         {
             this.direction = setDirection;
         }
+        public void GetHit()
+        {
+            if (health <= 0)
+            {
+                Scene.RemoveEntity(this);
+                Scene.Player.AddMoney(moneyReward);
+            }
+        }
         public void CheckCurrentTile()
         {
 
             // Get the position of the enemy and divide it by the tile size to get integer that represents tile position
             // Check if array index is not out of bounds
-            int indexX = (int)((position.X- Scene.shopWidth) / Scene.GetTileSize());
-            int indexY = (int)this.position.Y / Scene.GetTileSize();
-            if (indexX >= 0 && indexX < Scene.playAreaWidth && indexY >= 0 && indexY < Scene.playAreaHeight)
+            if (Scene.CheckInBounds(this.position))
             {
-                TileEntity Tile = Scene.playArea[indexX][indexY];
+                currentTileGridSpot = Scene.FindGridSpot(this.position);
+                TileEntity Tile = Scene.playArea[(int)currentTileGridSpot.X][(int)currentTileGridSpot.Y];
 
-                if (Tile is MovementTile MovementTile)
+                if (Tile is TileMovement MovementTile)
                 {
                     currentTile = MovementTile;
-                    currentTileGridSpot = new Vector2(indexX, indexY);
 
 
                 }
@@ -100,7 +111,7 @@ namespace MohawkGame2D
         }
         public void CheckNextTile()
         {
-            MovementTile nextPossibleTile;
+            TileMovement nextPossibleTile;
 
             // Check all 4 cardinal directions for movementTile
 
@@ -117,7 +128,7 @@ namespace MohawkGame2D
                         // Check if array index is not out of bounds
                         if (indexX >= 0 && indexX < Scene.playAreaWidth && indexY >= 0 && indexY < Scene.playAreaHeight)
                         {
-                            if (Scene.playArea[indexX][indexY] is MovementTile MoveTile)
+                            if (Scene.playArea[indexX][indexY] is TileMovement MoveTile)
                             {
                                 // Check if this cardinal tile has already been crossed over, if not then make it the next tile
                                 if (!tilePathMoved.Contains(MoveTile))
@@ -134,7 +145,7 @@ namespace MohawkGame2D
                         // Check if array index is not out of bounds
                         if (indexX >= 0 && indexX < Scene.playAreaWidth && indexY >= 0 && indexY < Scene.playAreaHeight)
                         {
-                            if (Scene.playArea[indexX][indexY] is MovementTile MoveTile)
+                            if (Scene.playArea[indexX][indexY] is TileMovement MoveTile)
                             {
                                 // Check if this cardinal tile has already been crossed over, if not then make it the next tile
                                 if (!tilePathMoved.Contains(MoveTile))
@@ -151,7 +162,7 @@ namespace MohawkGame2D
                         // Check if array index is not out of bounds
                         if (indexX >= 0 && indexX < Scene.playAreaWidth && indexY >= 0 && indexY < Scene.playAreaHeight)
                         {
-                            if (Scene.playArea[indexX][indexY] is MovementTile MoveTile)
+                            if (Scene.playArea[indexX][indexY] is TileMovement MoveTile)
                             {
                                 // Check if this cardinal tile has already been crossed over, if not then make it the next tile
                                 if (!tilePathMoved.Contains(MoveTile))
@@ -169,7 +180,7 @@ namespace MohawkGame2D
                         // Check if array index is not out of bounds
                         if (indexX >= 0 && indexX < Scene.playAreaWidth && indexY >= 0 && indexY < Scene.playAreaHeight)
                         {
-                            if (Scene.playArea[indexX][indexY] is MovementTile MoveTile)
+                            if (Scene.playArea[indexX][indexY] is TileMovement MoveTile)
                             {
                                 // Check if this cardinal tile has already been crossed over, if not then make it the next tile
                                 if (!tilePathMoved.Contains(MoveTile))

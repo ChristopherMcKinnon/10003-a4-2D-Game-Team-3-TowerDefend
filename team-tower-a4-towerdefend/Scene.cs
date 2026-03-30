@@ -14,8 +14,10 @@ namespace MohawkGame2D
         public List<Entity> addEntityQueue = new List<Entity>(); // Where all new entities are queued for addition
         public List<Entity> removeEntityQueue = new List<Entity>(); // Where all entities are queued for removal
 
+        public Dictionary <string, Texture2D> textures;
         public Game Game;
         public Controls Controls;
+        public Player Player;
 
         public bool gameOver = false;
         public bool gamePause = false;
@@ -24,35 +26,59 @@ namespace MohawkGame2D
         public int playAreaWidth;
         public TileEntity[][] playArea;
         public float shopWidth;
+        public float shopIndentHeight;
+        public Button[] shopButtons;
 
+        public Vector2 mousePos;
+
+        public int tileSize;
         public int gridTileSize;
         public int graphicsSize;
 
         public float spawnTimer;
         public float spawnInterval;
 
-        public Scene(Game setGame) // Initialize
+
+        // Initialize
+        public Scene(Game setGame)
         {
             // Variables that must be initialized when creating a new scene
             this.Game = setGame;
             this.Controls = new Controls(this);
 
+            // Load all textures
+            textures = new Dictionary<string, Texture2D>()
+            {
+                {"TileBase", Graphics.LoadTexture("..\\..\\..\\..\\..\\10003-a4-2D-Game-Team-3-TowerDefend\\team-tower-a4-towerdefend\\Assets\\TileBase.png")},
+                {"TowerCommon", Graphics.LoadTexture("..\\..\\..\\..\\..\\10003-a4-2D-Game-Team-3-TowerDefend\\team-tower-a4-towerdefend\\Assets\\TowerCommon.png")},
+                {"TowerTrishot", Graphics.LoadTexture("..\\..\\..\\..\\..\\10003-a4-2D-Game-Team-3-TowerDefend\\team-tower-a4-towerdefend\\Assets\\TowerTrishot.png")},
+                {"TowerSniper", Graphics.LoadTexture("..\\..\\..\\..\\..\\10003-a4-2D-Game-Team-3-TowerDefend\\team-tower-a4-towerdefend\\Assets\\TowerSniper.png")},
+                {"MovementTile", Graphics.LoadTexture("..\\..\\..\\..\\..\\10003-a4-2D-Game-Team-3-TowerDefend\\team-tower-a4-towerdefend\\Assets\\MovementTile.png")},
+                {"TilePlayer", Graphics.LoadTexture("..\\..\\..\\..\\..\\10003-a4-2D-Game-Team-3-TowerDefend\\team-tower-a4-towerdefend\\Assets\\TilePlayer.png")},
+                {"EnemyCommon", Graphics.LoadTexture("..\\..\\..\\..\\..\\10003-a4-2D-Game-Team-3-TowerDefend\\team-tower-a4-towerdefend\\Assets\\EnemyCommon.png")},
+                {"Button", Graphics.LoadTexture("..\\..\\..\\..\\..\\10003-a4-2D-Game-Team-3-TowerDefend\\team-tower-a4-towerdefend\\Assets\\Button.png")},
+                {"ButtonCover", Graphics.LoadTexture("..\\..\\..\\..\\..\\10003-a4-2D-Game-Team-3-TowerDefend\\team-tower-a4-towerdefend\\Assets\\ButtonCover.png")},
+                {"Money", Graphics.LoadTexture("..\\..\\..\\..\\..\\10003-a4-2D-Game-Team-3-TowerDefend\\team-tower-a4-towerdefend\\Assets\\Money.png")},
+
+            };
+
+            // Load all audio files
+
+            // Set Player
+            this.Player = new Player(this); // Player must be loaded after textures because it has a texture
 
             // Set play area
             playAreaWidth = 12;
             playAreaHeight = 12;
             playArea = new TileEntity[playAreaWidth][];
-            shopWidth = 288;
-
+            shopWidth = 288; // The amount of space given between the edge of the screen and the play area
+            shopIndentHeight = 192; // The amount of space between the top of the screen and the shop (shop exclusive indent)
             gridTileSize = 32; // Square
             graphicsSize = 3;
-
-            Console.WriteLine(playArea.Length);
             for (int i = 0; i < playArea.Length; i++) // Init the nested arrays
             {
                 playArea[i] = new TileEntity[playAreaHeight];
             }
-            Console.WriteLine(playArea[0].Length);
             for (int x = 0; x < playArea.Length; x++) // Set each spot to tile
             {
                 for(int y = 0; y < playArea[x].Length; y++)
@@ -72,10 +98,25 @@ namespace MohawkGame2D
 
             }
 
+            // Spawner variables
             spawnTimer = 2.5f;
             spawnInterval = 0;
 
-            // Load audio files here
+            // Init shop buttons
+            tileSize = GetTileSize();
+            shopButtons = [
+                new ShopButton(this, textures["TowerCommon"], tempShop, 50f),
+                new ShopButton(this, textures["TowerTrishot"], tempShop, 175f),
+                new ShopButton(this, textures["TowerSniper"], tempShop, 150f),
+                ];
+            // Set shop button variables 
+            for (int i = 0; i < shopButtons.Length; i++)
+            {
+                // Set button variables
+                shopButtons[i].position.Y = shopIndentHeight + (i * tileSize);
+                AddEntity(shopButtons[i]);
+                
+            }
 
 
             SetMovementPaths();
@@ -83,6 +124,7 @@ namespace MohawkGame2D
         }
         public void Update() // Control all things within the scene
         {
+            mousePos = Input.GetMousePosition(); // Set global mouse pos
             this.Controls.Update();
 
 
@@ -113,7 +155,11 @@ namespace MohawkGame2D
                 removeEntityQueue.Clear();
 
                 SpawnEnemies();
-                DrawEnemyCount();
+
+                // UI Elements
+                DrawShop();
+                DrawMoney();
+                //DrawEnemyCount();
             }
 
             // Game Pause
@@ -138,7 +184,6 @@ namespace MohawkGame2D
         }
 
         // Entity related
-
         public void AddEntity(Entity setEntity) // Add to addEntityQueue
         {
             addEntityQueue.Add(setEntity);
@@ -157,6 +202,7 @@ namespace MohawkGame2D
                 spawnInterval = spawnTimer; // Reset cooldown
             }
         }
+
         // Tile related
         public int GetTileSize()
         {
@@ -203,7 +249,28 @@ namespace MohawkGame2D
         }
         public bool CheckTileOccupied(Vector2 gridSpot)
         {
-            if (playArea[(int)gridSpot.X][(int)gridSpot.Y] is Tower || playArea[(int)gridSpot.X][(int)gridSpot.Y] is MovementTile)
+            if (CheckInBounds(gridSpot)){
+                
+                if (playArea[(int)gridSpot.X][(int)gridSpot.Y] is TowerCommon || playArea[(int)gridSpot.X][(int)gridSpot.Y] is TileMovement)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
+        public bool CheckInBounds(Vector2 position)
+        {
+            int tileSize = GetTileSize();
+            int indexX = (int)((position.X - shopWidth) / tileSize);
+            int indexY = (int)position.Y / tileSize;
+            if (indexX >= 0 && indexX < playAreaWidth && indexY >= 0 && indexY < playAreaHeight)
             {
                 return true;
             }
@@ -212,12 +279,23 @@ namespace MohawkGame2D
                 return false;
             }
         }
+        public Vector2 FindGridSpot(Vector2 position)
+        {
+            int tileSize = GetTileSize();
+            if (CheckInBounds(position))
+            {
+                return new Vector2((int)((position.X - shopWidth) / tileSize), (int)position.Y / tileSize);
+            } else
+            {
+                return new Vector2(0, 0); // In case of failure
+            }
+        }
         public void AddTower(TileEntity TowerType, Vector2 gridSpot)
         {
             if (!CheckTileOccupied(gridSpot))
             {
                 RemoveEntity(playArea[(int)gridSpot.X][(int)gridSpot.Y]); // First remove tile
-                playArea[(int)gridSpot.X][(int)gridSpot.Y] = new Tower(this);
+                playArea[(int)gridSpot.X][(int)gridSpot.Y] = new TowerCommon(this);
                 TileEntity currentSpot = playArea[(int)gridSpot.X][(int)gridSpot.Y]; // Set reference to what tile entity the loop is on
                 playArea[(int)gridSpot.X][(int)gridSpot.Y].position = FindTileScreenPosition(gridSpot);
 
@@ -246,7 +324,7 @@ namespace MohawkGame2D
             for (int i = 0; i < moveTileMap.Length; i++)
             {
                 RemoveEntity(playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y]); // Remove all tile entities for replacement
-                playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y] = new MovementTile(this); // Set the movement tile to grid
+                playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y] = new TileMovement(this); // Set the movement tile to grid
                 playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y].position = FindTileScreenPosition(moveTileMap[i]); // Update position
                 AddEntity(playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y]); // Officially add the entity to the entity list
             }
@@ -255,7 +333,6 @@ namespace MohawkGame2D
         }
         public Vector2 CheckMouseHoverTile()
         {
-            Vector2 mousePos = Input.GetMousePosition();
 
             for (int x = 0; x < playArea.Length; x++)
             {
@@ -276,7 +353,6 @@ namespace MohawkGame2D
         }
 
         // Game ending
-
         public void GameEnd() // Should always be called within the update loop
         {
             if (!gameOver) // Only runs once at the end of the game
@@ -292,7 +368,6 @@ namespace MohawkGame2D
         }
 
         // UI related
-
         public void DrawEnemyCount()
         {
             int counter = 0;
@@ -305,8 +380,27 @@ namespace MohawkGame2D
             }
             Text.Draw($"{counter}", new Vector2(0, 0));
         }
-        // Pausing
+        public void DrawMoney()
+        {
+            Graphics.Draw(textures["Money"], new Vector2(0, 0));
+            Text.Draw($"{Player.money}", new Vector2(50, 50));
+        }
+        public void DrawShop()
+        {
+            for (int i = 0; i < shopButtons.Length; i++)
+            {
 
+                // Set shop button text
+                Text.Draw($"${shopButtons[i].moneyCost}", new Vector2(100, shopIndentHeight + tileSize/3 + (i * tileSize)));
+
+            }
+        }
+        public void tempShop()
+        {
+            Console.WriteLine("you clicked it ");
+        }
+
+        // Pausing
         public void GamePause() // Set flag for pausing game in update loop
         {
             gamePause = true;
