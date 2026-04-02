@@ -24,6 +24,8 @@ namespace MohawkGame2D
                 Vector2 gridSpot = Scene.CheckMouseHoverTile();
                 Console.Write(gridSpot);
                 Scene.AddTower(new Tower(Scene), gridSpot);
+
+                // Add sounds here
             }
         }
 
