@@ -7,11 +7,9 @@ namespace MohawkGame2D
 {
     internal class ShopButton : Button
     {
-        bool drawGhostFlag;
-        public ShopButton(Scene setScene, Texture2D setTargetSprite, Action setButtonAction, float setCost) : base(setScene, setTargetSprite, setButtonAction)
+        public ShopButton(Scene setScene, Texture2D setTargetSprite, float setCost) : base(setScene, setTargetSprite)
         {
             this.moneyCost = setCost;
-            this.drawGhostFlag = false;
         }
         public override void Update()
         {
@@ -25,7 +23,16 @@ namespace MohawkGame2D
                 // Check if mouse is actually on the button
                 if (CheckHover())
                 {
-                    buttonAction();
+                    // Check cost
+                    if (Scene.Player.money >= this.moneyCost)
+                    {
+                        // Check if Scene.drawGhostFlag is true
+                        if (!Scene.drawGhostFlag)
+                        {
+                            Scene.drawGhostFlag = true;
+                        }
+                    }
+                    
                 }
             }
         }

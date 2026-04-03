@@ -19,8 +19,9 @@ namespace MohawkGame2D
         public Controls Controls;
         public Player Player;
 
-        public bool gameOver = false;
-        public bool gamePause = false;
+        public bool gameOver;
+        public bool gamePause;
+        public bool drawGhostFlag;
 
         public int playAreaHeight;
         public int playAreaWidth;
@@ -34,6 +35,7 @@ namespace MohawkGame2D
         public int tileSize;
         public int gridTileSize;
         public int graphicsSize;
+        
 
         public float spawnTimer;
         public float spawnInterval;
@@ -97,6 +99,9 @@ namespace MohawkGame2D
                 }
 
             }
+            gameOver = false;
+            gamePause = false;
+            drawGhostFlag = false;
 
             // Spawner variables
             spawnTimer = 2.5f;
@@ -105,13 +110,14 @@ namespace MohawkGame2D
             // Init shop buttons
             tileSize = GetTileSize();
             shopButtons = [
-                new ShopButton(this, textures["TowerCommon"], tempShop, 50f),
-                new ShopButton(this, textures["TowerTrishot"], tempShop, 175f),
-                new ShopButton(this, textures["TowerSniper"], tempShop, 150f),
+                new ShopButton(this, textures["TowerCommon"], 50f),
+                new ShopButton(this, textures["TowerTrishot"], 175f),
+                new ShopButton(this, textures["TowerSniper"], 150f),
                 ];
             // Set shop button variables 
             for (int i = 0; i < shopButtons.Length; i++)
             {
+
                 // Set button variables
                 shopButtons[i].position.Y = shopIndentHeight + (i * tileSize);
                 AddEntity(shopButtons[i]);
@@ -156,9 +162,12 @@ namespace MohawkGame2D
 
                 SpawnEnemies();
 
+                
+                
                 // UI Elements
                 DrawShop();
                 DrawMoney();
+                
                 //DrawEnemyCount();
             }
 
@@ -169,11 +178,18 @@ namespace MohawkGame2D
             }
 
             // Draw each entity
+            
             foreach (Entity entity in entities)
             {
                 entity.StdDraw();
             }
-
+            if (!gameOver)
+            {
+                for (int i = 0; i < shopButtons.Length; i++)
+                {
+                    CheckDrawGhost(shopButtons[i]);
+                }
+            }
             // Process Game End
             if (gameOver)
             {
@@ -268,6 +284,7 @@ namespace MohawkGame2D
         public bool CheckInBounds(Vector2 position)
         {
             int tileSize = GetTileSize();
+            // Convert play area from screen coordinates to small coordinates
             int indexX = (int)((position.X - shopWidth) / tileSize);
             int indexY = (int)position.Y / tileSize;
             if (indexX >= 0 && indexX < playAreaWidth && indexY >= 0 && indexY < playAreaHeight)
@@ -351,7 +368,42 @@ namespace MohawkGame2D
             return new Vector2(-1, -1); // This is in case of an error
 
         }
+        public void CheckDrawGhost(Button Button)
+        {
+            if (drawGhostFlag == true)
+            {
+                DrawGhost(Button);
+            }
+        }
+        public void DrawGhost(Button Button)
+        {
+            Vector2 middle = GetTileSizeBounds() / 2;
+            Graphics.Scale = graphicsSize;
 
+            // If not in play area, follow the mouse
+            if (!CheckInBounds(mousePos))
+            {
+                Graphics.Draw(Button.sprite, mousePos - middle);
+                Graphics.Draw(Button.targetSprite, mousePos - middle);
+
+            }
+            // If in play area, orient to the grid spot its on
+            else
+            {
+                Vector2 ghostGridSpot = FindGridSpot(mousePos);
+                Vector2 ghostGridPos = FindTileScreenPosition(ghostGridSpot);
+                if (!CheckTileOccupied(ghostGridSpot))
+                {
+                    Graphics.Draw(Button.sprite, ghostGridPos);
+                    Graphics.Draw(Button.targetSprite, ghostGridPos);
+                }
+                
+            }
+            // If not on grid:
+
+            // If on grid:
+
+        }
         // Game ending
         public void GameEnd() // Should always be called within the update loop
         {

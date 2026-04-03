@@ -9,11 +9,10 @@ namespace MohawkGame2D
     {
         Scene Scene;
         Vector2 mousePos;
-        bool drawGhostFlag;
         public Controls(Scene setScene)
         {
             this.Scene = setScene;
-            this.drawGhostFlag = false;
+            
         }
         public void Update()
         {
@@ -45,20 +44,6 @@ namespace MohawkGame2D
                 }
             }
         }
-        public void CheckDrawGhost()
-        {
-            if (drawGhostFlag == true)
-            {
-                DrawGhost();
-            }
-        }
-        public void DrawGhost()
-        {/*
-            Vector2 middle = Scene.GetTileSizeBounds() / 2;
-            Vector2 mousePos = Scene.mousePos;
-            Graphics.Draw(sprite, mousePos - middle);
-            Graphics.Draw(targetSprite, mousePos - middle);
-            */
-        }
+        
     }
 }

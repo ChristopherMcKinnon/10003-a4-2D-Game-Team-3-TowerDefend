@@ -8,7 +8,6 @@ namespace MohawkGame2D
     internal class Button : Entity
     {
 
-        public Action buttonAction;
         Vector2 scale;
         public Texture2D targetSprite;
         public Texture2D coverSprite;
@@ -17,10 +16,9 @@ namespace MohawkGame2D
         public float moneyCost;
 
 
-        public Button(Scene setScene, Texture2D setTargetSprite, Action setButtonAction) : base(setScene)
+        public Button(Scene setScene, Texture2D setTargetSprite) : base(setScene)
         {
             this.targetSprite = setTargetSprite;
-            buttonAction = setButtonAction;
             this.scale = Scene.GetTileSizeBounds();
             sprite = Scene.textures["Button"];
             coverSprite = Scene.textures["ButtonCover"];
@@ -48,7 +46,6 @@ namespace MohawkGame2D
                 // Check if mouse is actually on the button
                 if (CheckHover())
                 {
-                    buttonAction();
                 }
             }
         }
