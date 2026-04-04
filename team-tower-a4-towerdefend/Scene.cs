@@ -135,7 +135,7 @@ namespace MohawkGame2D
 
 
             SetMovementPaths();
-
+            ReplaceTile(Player, new Vector2(7, 3));
         }
         public void Update() // Control all things within the scene
         {

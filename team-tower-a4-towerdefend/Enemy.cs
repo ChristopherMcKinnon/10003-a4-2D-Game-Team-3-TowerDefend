@@ -14,9 +14,9 @@ namespace MohawkGame2D
         public Vector2 direction;
         public Vector2 velocity;
         public Vector2 spawnPos;
-        public List<TileMovement> tilePathMoved;
-        public TileMovement nextTile;
-        public TileMovement currentTile;
+        public List<TileEntity> tilePathMoved;
+        public TileEntity nextTile;
+        public TileEntity currentTile;
         public Vector2 currentTileGridSpot;
         public float graphicsSize;
         public Vector2 centrePos;
@@ -25,13 +25,13 @@ namespace MohawkGame2D
 
         public Enemy(Scene setScene) : base(setScene)
         {
-            tilePathMoved = new List<TileMovement>(); // All tiles previously moved on (touched)
+            tilePathMoved = new List<TileEntity>(); // All tiles previously moved on (touched)
             hitMid = false; // Flag for hitting the middle of the movement square
             graphicsSize = 2f;
             this.sprite = Scene.textures["EnemyCommon"];
             this.healthFactor = 1f;
             this.health = 10f * healthFactor;
-            this.moveSpeed = 40f;
+            this.moveSpeed = 100f;
             this.velocity = new Vector2(moveSpeed, moveSpeed); // Moves at the same pace in all cardinal directions
             this.direction = new Vector2(-1, 1);
 
@@ -136,6 +136,10 @@ namespace MohawkGame2D
                                     nextTile = MoveTile;
                                 }
                             }
+                            else if (Scene.playArea[indexX][indexY] is Player PlayerTile)
+                            {
+                                nextTile = PlayerTile;
+                            }
                         }
 
                         break;
@@ -152,6 +156,10 @@ namespace MohawkGame2D
                                 {
                                     nextTile = MoveTile;
                                 }
+                            }
+                            else if (Scene.playArea[indexX][indexY] is Player PlayerTile)
+                            {
+                                nextTile = PlayerTile;
                             }
                         }
 
@@ -170,6 +178,10 @@ namespace MohawkGame2D
                                     nextTile = MoveTile;
                                 }
                             }
+                            else if (Scene.playArea[indexX][indexY] is Player PlayerTile)
+                            {
+                                nextTile = PlayerTile;
+                            }
                         }
 
 
@@ -187,6 +199,10 @@ namespace MohawkGame2D
                                 {
                                     nextTile = MoveTile;
                                 }
+                            }
+                            else if (Scene.playArea[indexX][indexY] is Player PlayerTile)
+                            {
+                                nextTile = PlayerTile;
                             }
                         }
 
