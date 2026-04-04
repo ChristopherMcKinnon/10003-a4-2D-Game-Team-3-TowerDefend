@@ -99,6 +99,10 @@ namespace MohawkGame2D
 
 
                 }
+                if (Tile is Player PlayerTile) // Hit the player base
+                {
+                    Scene.RemoveEntity(this);
+                }
                 if (tilePathMoved.Contains(currentTile)) // Check if in enemy's path list
                 {
 
