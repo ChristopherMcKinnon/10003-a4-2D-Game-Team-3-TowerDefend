@@ -35,6 +35,9 @@ namespace MohawkGame2D
                     {
                         Scene.selectedShopTower = baseTower;
                     }
+                } else
+                {
+                    Scene.selectedShopTower = null;
                 }
             }
         }

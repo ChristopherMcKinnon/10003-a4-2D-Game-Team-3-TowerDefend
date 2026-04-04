@@ -48,20 +48,33 @@ namespace MohawkGame2D
                         {
                             Scene.ReplaceTile(new TowerCommon(Scene, Scene.towerCommonCost), gridSpot);
                             Scene.Player.DetractMoney(placeTowerCost);
+                            if (!Scene.Player.CheckDetractMoney(placeTowerCost))
+                            {
+                                Scene.selectedShopTower = null;
+                            }
                         }
                         if (Scene.selectedShopTower is TowerTrishot) // Trishot Tower
                         {
                             Scene.ReplaceTile(new TowerTrishot(Scene, Scene.towerTrishotCost), gridSpot);
                             Scene.Player.DetractMoney(placeTowerCost);
+                            if (!Scene.Player.CheckDetractMoney(placeTowerCost))
+                            {
+                                Scene.selectedShopTower = null;
+                            }
                         }
                         if (Scene.selectedShopTower is TowerSniper) // Sniper Tower
                         {
                             Scene.ReplaceTile(new TowerSniper(Scene, Scene.towerSniperCost), gridSpot);
                             Scene.Player.DetractMoney(placeTowerCost);
+                            if (!Scene.Player.CheckDetractMoney(placeTowerCost))
+                            {
+                                Scene.selectedShopTower = null;
+                            }
                         }
                     } else
                     {
                         Console.WriteLine("You outta money dawg");
+                        Scene.selectedShopTower = null;
                     }
                 }
             }
