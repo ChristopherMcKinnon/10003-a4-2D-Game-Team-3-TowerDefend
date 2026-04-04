@@ -29,7 +29,22 @@ namespace MohawkGame2D
         {
             this.money += money;
         }
-
+        public bool CheckDetractMoney(float money) // Returns true if it can detract
+        {
+            if (this.money-money >= 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public void DetractMoney(float money)
+        {
+            this.money -= money;
+        }
+        
 
     }
 }

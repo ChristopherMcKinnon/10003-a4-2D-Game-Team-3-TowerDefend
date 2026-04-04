@@ -18,6 +18,7 @@ namespace MohawkGame2D
         {
             this.mousePos = Scene.mousePos;
             GameStateChanges();
+            CheckPlaceTower();
             CheckTile();
         }
         public void CheckTile()
@@ -26,7 +27,43 @@ namespace MohawkGame2D
             {
                 Vector2 gridSpot = Scene.CheckMouseHoverTile();
                 Console.Write(gridSpot);
-                Scene.AddTower(new TowerCommon(Scene), gridSpot);
+                //Scene.AddTower(new TowerCommon(Scene), gridSpot);
+            }
+        }
+        public void CheckPlaceTower()
+        {
+            if (Input.IsMouseButtonPressed(MouseInput.Left))
+            {
+                Vector2 gridSpot = Scene.FindGridSpot(mousePos);
+                if (
+                    Scene.selectedShopTower != null &&
+                    Scene.CheckInBounds(mousePos) &&
+                    !Scene.CheckTileOccupied(gridSpot))
+                {
+                    float placeTowerCost = Scene.selectedShopTower.moneyCost;
+                    if (Scene.Player.CheckDetractMoney(placeTowerCost))
+                    {
+                        // Instantiate a copy of the tower
+                        if (Scene.selectedShopTower is TowerCommon) // Common Tower
+                        {
+                            Scene.ReplaceTile(new TowerCommon(Scene, Scene.towerCommonCost), gridSpot);
+                            Scene.Player.DetractMoney(placeTowerCost);
+                        }
+                        if (Scene.selectedShopTower is TowerTrishot) // Trishot Tower
+                        {
+                            Scene.ReplaceTile(new TowerTrishot(Scene, Scene.towerTrishotCost), gridSpot);
+                            Scene.Player.DetractMoney(placeTowerCost);
+                        }
+                        if (Scene.selectedShopTower is TowerSniper) // Sniper Tower
+                        {
+                            Scene.ReplaceTile(new TowerSniper(Scene, Scene.towerSniperCost), gridSpot);
+                            Scene.Player.DetractMoney(placeTowerCost);
+                        }
+                    } else
+                    {
+                        Console.WriteLine("You outta money dawg");
+                    }
+                }
             }
         }
         // Game Logic

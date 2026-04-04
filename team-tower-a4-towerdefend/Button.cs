@@ -12,13 +12,13 @@ namespace MohawkGame2D
         public Texture2D targetSprite;
         public Texture2D coverSprite;
         public Vector2[] buttonBounds;
-        Vector2 mousePos;
         public float moneyCost;
+        Vector2 mousePos;
 
 
-        public Button(Scene setScene, TileEntity setTower) : base(setScene)
+        public Button(Scene setScene, float setCost) : base(setScene)
         {
-            this.targetSprite = setTower.sprite;
+            this.moneyCost = setCost;
             this.scale = Scene.GetTileSizeBounds();
             sprite = Scene.textures["Button"];
             coverSprite = Scene.textures["ButtonCover"];
@@ -52,7 +52,7 @@ namespace MohawkGame2D
         public void DrawCostOverlay()
         {
             // Check cost
-            if (Scene.Player.money < this.moneyCost)
+            if (Scene.Player.money < moneyCost)
             {
                 // Draw additional sprite for not enough money
                 Graphics.Draw(coverSprite, position);

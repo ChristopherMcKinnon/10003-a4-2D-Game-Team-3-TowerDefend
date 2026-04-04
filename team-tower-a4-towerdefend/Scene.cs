@@ -28,7 +28,11 @@ namespace MohawkGame2D
         public float shopWidth;
         public float shopIndentHeight;
         public Button[] shopButtons;
-        public TileEntity selectedShopTower;
+        public TowerEntity selectedShopTower;
+
+        public float towerCommonCost;
+        public float towerTrishotCost;
+        public float towerSniperCost;
 
         public Vector2 mousePos;
 
@@ -77,6 +81,11 @@ namespace MohawkGame2D
             shopIndentHeight = 192; // The amount of space between the top of the screen and the shop (shop exclusive indent)
             gridTileSize = 32; // Square
             graphicsSize = 3;
+
+            towerCommonCost = 50;
+            towerTrishotCost = 175;
+            towerSniperCost = 150;
+
             for (int i = 0; i < playArea.Length; i++) // Init the nested arrays
             {
                 playArea[i] = new TileEntity[playAreaHeight];
@@ -110,9 +119,9 @@ namespace MohawkGame2D
             // Init shop buttons
             tileSize = GetTileSize();
             shopButtons = [
-                new ShopButton(this, new TowerCommon(this), 50f, KeyboardInput.One),
-                new ShopButton(this, new TowerTrishot(this), 175f, KeyboardInput.Two),
-                new ShopButton(this, new TowerCommon(this), 150f, KeyboardInput.Three),
+                new ShopButton(this, new TowerCommon(this, towerCommonCost), towerCommonCost, KeyboardInput.One),
+                new ShopButton(this, new TowerTrishot(this, towerTrishotCost), towerTrishotCost, KeyboardInput.Two),
+                new ShopButton(this, new TowerSniper(this, towerSniperCost), towerSniperCost, KeyboardInput.Three),
                 ];
             // Set shop button variables 
             for (int i = 0; i < shopButtons.Length; i++)
@@ -132,7 +141,7 @@ namespace MohawkGame2D
         {
             //BUG TESTING ZONE !!! CAUTION =======================================
 
-            Console.WriteLine(selectedShopTower);
+            //Console.WriteLine(selectedShopTower);
 
             // ===================================================================
             mousePos = Input.GetMousePosition(); // Set global mouse pos
@@ -324,21 +333,6 @@ namespace MohawkGame2D
                 return new Vector2(-1, -1); // In case of failure
             }
         }
-        public void AddTower(TileEntity TowerType, Vector2 gridSpot)
-        {
-            if (!CheckTileOccupied(gridSpot))
-            {
-                RemoveEntity(playArea[(int)gridSpot.X][(int)gridSpot.Y]); // First remove tile
-                playArea[(int)gridSpot.X][(int)gridSpot.Y] = new TowerCommon(this);
-                TileEntity currentSpot = playArea[(int)gridSpot.X][(int)gridSpot.Y]; // Set reference to what tile entity the loop is on
-                playArea[(int)gridSpot.X][(int)gridSpot.Y].position = FindTileScreenPosition(gridSpot);
-
-                AddEntity(playArea[(int)gridSpot.X][(int)gridSpot.Y]);
-            } else
-            {
-                Console.WriteLine("There is already a tower there!");
-            }
-        }
         public void SetMovementPaths() // Not finished
         {
             Vector2[] moveTileMap = [// Ordered in rows
@@ -357,13 +351,24 @@ namespace MohawkGame2D
             ];
             for (int i = 0; i < moveTileMap.Length; i++)
             {
-                RemoveEntity(playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y]); // Remove all tile entities for replacement
-                playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y] = new TileMovement(this); // Set the movement tile to grid
-                playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y].position = FindTileScreenPosition(moveTileMap[i]); // Update position
-                AddEntity(playArea[(int)moveTileMap[i].X][(int)moveTileMap[i].Y]); // Officially add the entity to the entity list
+                ReplaceTile(new TileMovement(this), moveTileMap[i]);
             }
 
             // Set the spawn tiles    
+        }
+        public void ReplaceTile(TileEntity setTileEntity, Vector2 gridSpot)
+        {
+            if (playArea != null)
+            {
+                RemoveEntity(playArea[(int)gridSpot.X][(int)gridSpot.Y]); // Remove all tile entities for replacement
+                playArea[(int)gridSpot.X][(int)gridSpot.Y] = setTileEntity; // Set the movement tile to grid
+                playArea[(int)gridSpot.X][(int)gridSpot.Y].position = FindTileScreenPosition(gridSpot); // Update position
+                AddEntity(playArea[(int)gridSpot.X][(int)gridSpot.Y]); // Officially add the entity to the entity list
+            } else
+            {
+                Console.WriteLine("Play grid is somehow null - Scene.ReplaceTile()");
+            }
+            
         }
         public Vector2 CheckMouseHoverTile()
         {
@@ -413,10 +418,6 @@ namespace MohawkGame2D
 
             }
         }
-        public void PlaceTower()
-        {
-
-        }
         // Game ending
         public void GameEnd() // Should always be called within the update loop
         {
@@ -447,6 +448,7 @@ namespace MohawkGame2D
         }
         public void DrawMoney()
         {
+            Graphics.Scale = graphicsSize;
             Graphics.Draw(textures["Money"], new Vector2(0, 0));
             Text.Draw($"{Player.money}", new Vector2(50, 50));
         }

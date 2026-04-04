@@ -7,12 +7,12 @@ namespace MohawkGame2D
 {
     internal class ShopButton : Button
     {
-        TileEntity baseTower;
+        TowerEntity baseTower;
         KeyboardInput keyShortcut;
-        public ShopButton(Scene setScene, TileEntity setTower, float setCost, KeyboardInput setKeyShortcut) : base(setScene, setTower)
+        public ShopButton(Scene setScene, TowerEntity setTower, float setCost, KeyboardInput setKeyShortcut) : base(setScene, setCost)
         {
+            this.targetSprite = setTower.sprite;
             this.baseTower = setTower;
-            this.moneyCost = setCost;
             this.keyShortcut = setKeyShortcut;
         }
         public override void Update()
@@ -25,7 +25,7 @@ namespace MohawkGame2D
             if ((Input.IsMouseButtonPressed(MouseInput.Left) && CheckHover() || Input.IsKeyboardKeyPressed(keyShortcut)))
             {
                 // Check cost
-                if (Scene.Player.money >= this.moneyCost)
+                if (Scene.Player.money >= this.baseTower.moneyCost)
                 {
                     // Check if it has already been clicked, if so, disable it
                     if (Scene.selectedShopTower == baseTower)

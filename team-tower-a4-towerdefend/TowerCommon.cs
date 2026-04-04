@@ -5,10 +5,10 @@ using System.Numerics;
 
 namespace MohawkGame2D
 {
-    internal class TowerCommon : TileEntity
+    internal class TowerCommon : TowerEntity
     {
 
-        public TowerCommon(Scene setScene) : base(setScene) // Entity requires Scene
+        public TowerCommon(Scene setScene, float setMoneyCost) : base(setScene, setMoneyCost) // Entity requires Scene
         {
             this.sprite = Scene.textures["TowerCommon"];
         }

@@ -5,12 +5,12 @@ using System.Numerics;
 
 namespace MohawkGame2D
 {
-    internal class TowerTrishot : TowerEntity
+    internal class TowerSniper : TowerEntity
     {
 
-        public TowerTrishot(Scene setScene, float setMoneyCost) : base(setScene, setMoneyCost) // Entity requires Scene
+        public TowerSniper(Scene setScene, float setMoneyCost) : base(setScene, setMoneyCost) // Entity requires Scene
         {
-            this.sprite = Scene.textures["TowerTrishot"];
+            this.sprite = Scene.textures["TowerSniper"];
         }
 
         public override void StdDraw()
