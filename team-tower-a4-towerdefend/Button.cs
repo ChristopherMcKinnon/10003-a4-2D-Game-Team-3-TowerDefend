@@ -16,9 +16,9 @@ namespace MohawkGame2D
         public float moneyCost;
 
 
-        public Button(Scene setScene, Texture2D setTargetSprite) : base(setScene)
+        public Button(Scene setScene, TileEntity setTower) : base(setScene)
         {
-            this.targetSprite = setTargetSprite;
+            this.targetSprite = setTower.sprite;
             this.scale = Scene.GetTileSizeBounds();
             sprite = Scene.textures["Button"];
             coverSprite = Scene.textures["ButtonCover"];

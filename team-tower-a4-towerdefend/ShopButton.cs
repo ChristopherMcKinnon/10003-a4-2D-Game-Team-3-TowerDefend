@@ -7,9 +7,13 @@ namespace MohawkGame2D
 {
     internal class ShopButton : Button
     {
-        public ShopButton(Scene setScene, Texture2D setTargetSprite, float setCost) : base(setScene, setTargetSprite)
+        TileEntity baseTower;
+        KeyboardInput keyShortcut;
+        public ShopButton(Scene setScene, TileEntity setTower, float setCost, KeyboardInput setKeyShortcut) : base(setScene, setTower)
         {
+            this.baseTower = setTower;
             this.moneyCost = setCost;
+            this.keyShortcut = setKeyShortcut;
         }
         public override void Update()
         {
@@ -18,25 +22,21 @@ namespace MohawkGame2D
         public override void Click() // Can be overriden
         {
             // Check if mouse button clicked first
-            if (Input.IsMouseButtonPressed(MouseInput.Left))
+            if ((Input.IsMouseButtonPressed(MouseInput.Left) && CheckHover() || Input.IsKeyboardKeyPressed(keyShortcut)))
             {
-                // Check if mouse is actually on the button
-                if (CheckHover())
+                // Check cost
+                if (Scene.Player.money >= this.moneyCost)
                 {
-                    // Check cost
-                    if (Scene.Player.money >= this.moneyCost)
+                    // Check if it has already been clicked, if so, disable it
+                    if (Scene.selectedShopTower == baseTower)
                     {
-                        // Check if Scene.drawGhostFlag is true
-                        if (!Scene.drawGhostFlag)
-                        {
-                            Scene.drawGhostFlag = true;
-                        }
+                        Scene.selectedShopTower = null;
+                    } else
+                    {
+                        Scene.selectedShopTower = baseTower;
                     }
-                    
                 }
             }
         }
-
-
     }
 }

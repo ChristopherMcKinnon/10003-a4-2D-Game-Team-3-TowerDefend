@@ -12,7 +12,7 @@ namespace MohawkGame2D
         public Player(Scene setScene) : base(setScene)
         {
             this.sprite = Scene.textures["TilePlayer"];
-            this.money = 50f;
+            this.money = 200f;
         }
 
 

@@ -21,7 +21,6 @@ namespace MohawkGame2D
 
         public bool gameOver;
         public bool gamePause;
-        public bool drawGhostFlag;
 
         public int playAreaHeight;
         public int playAreaWidth;
@@ -29,6 +28,7 @@ namespace MohawkGame2D
         public float shopWidth;
         public float shopIndentHeight;
         public Button[] shopButtons;
+        public TileEntity selectedShopTower;
 
         public Vector2 mousePos;
 
@@ -101,7 +101,7 @@ namespace MohawkGame2D
             }
             gameOver = false;
             gamePause = false;
-            drawGhostFlag = false;
+            selectedShopTower = null;
 
             // Spawner variables
             spawnTimer = 2.5f;
@@ -110,9 +110,9 @@ namespace MohawkGame2D
             // Init shop buttons
             tileSize = GetTileSize();
             shopButtons = [
-                new ShopButton(this, textures["TowerCommon"], 50f),
-                new ShopButton(this, textures["TowerTrishot"], 175f),
-                new ShopButton(this, textures["TowerSniper"], 150f),
+                new ShopButton(this, new TowerCommon(this), 50f, KeyboardInput.One),
+                new ShopButton(this, new TowerTrishot(this), 175f, KeyboardInput.Two),
+                new ShopButton(this, new TowerCommon(this), 150f, KeyboardInput.Three),
                 ];
             // Set shop button variables 
             for (int i = 0; i < shopButtons.Length; i++)
@@ -130,6 +130,11 @@ namespace MohawkGame2D
         }
         public void Update() // Control all things within the scene
         {
+            //BUG TESTING ZONE !!! CAUTION =======================================
+
+            Console.WriteLine(selectedShopTower);
+
+            // ===================================================================
             mousePos = Input.GetMousePosition(); // Set global mouse pos
             this.Controls.Update();
 
@@ -183,11 +188,12 @@ namespace MohawkGame2D
             {
                 entity.StdDraw();
             }
+            // Draw shop ghost
             if (!gameOver)
             {
                 for (int i = 0; i < shopButtons.Length; i++)
                 {
-                    CheckDrawGhost(shopButtons[i]);
+                    CheckDrawGhost();
                 }
             }
             // Process Game End
@@ -265,7 +271,7 @@ namespace MohawkGame2D
         }
         public bool CheckTileOccupied(Vector2 gridSpot)
         {
-            if (CheckInBounds(gridSpot)){
+            if (CheckInBounds(FindTileScreenPosition(gridSpot))){
                 
                 if (playArea[(int)gridSpot.X][(int)gridSpot.Y] is TowerCommon || playArea[(int)gridSpot.X][(int)gridSpot.Y] is TileMovement)
                 {
@@ -281,12 +287,23 @@ namespace MohawkGame2D
                 return true;
             }
         }
-        public bool CheckInBounds(Vector2 position)
+        public bool CheckInBounds(Vector2 position) // Check if screen coordinates are in grid
         {
+            int indexX;
+            int indexY;
             int tileSize = GetTileSize();
             // Convert play area from screen coordinates to small coordinates
-            int indexX = (int)((position.X - shopWidth) / tileSize);
-            int indexY = (int)position.Y / tileSize;
+            float xTemp = (position.X - shopWidth) / tileSize;
+            if (xTemp < 0)
+            {
+                indexX = -1;
+            }
+            else
+            {
+                indexX = (int)((position.X - shopWidth) / tileSize);
+            }
+            
+            indexY = (int)position.Y / tileSize;
             if (indexX >= 0 && indexX < playAreaWidth && indexY >= 0 && indexY < playAreaHeight)
             {
                 return true;
@@ -296,7 +313,7 @@ namespace MohawkGame2D
                 return false;
             }
         }
-        public Vector2 FindGridSpot(Vector2 position)
+        public Vector2 FindGridSpot(Vector2 position) // Turn screen coordinates to a grid spot
         {
             int tileSize = GetTileSize();
             if (CheckInBounds(position))
@@ -304,7 +321,7 @@ namespace MohawkGame2D
                 return new Vector2((int)((position.X - shopWidth) / tileSize), (int)position.Y / tileSize);
             } else
             {
-                return new Vector2(0, 0); // In case of failure
+                return new Vector2(-1, -1); // In case of failure
             }
         }
         public void AddTower(TileEntity TowerType, Vector2 gridSpot)
@@ -368,14 +385,14 @@ namespace MohawkGame2D
             return new Vector2(-1, -1); // This is in case of an error
 
         }
-        public void CheckDrawGhost(Button Button)
+        public void CheckDrawGhost()
         {
-            if (drawGhostFlag == true)
+            if (selectedShopTower != null)
             {
-                DrawGhost(Button);
+                DrawGhost();
             }
         }
-        public void DrawGhost(Button Button)
+        public void DrawGhost()
         {
             Vector2 middle = GetTileSizeBounds() / 2;
             Graphics.Scale = graphicsSize;
@@ -383,25 +400,21 @@ namespace MohawkGame2D
             // If not in play area, follow the mouse
             if (!CheckInBounds(mousePos))
             {
-                Graphics.Draw(Button.sprite, mousePos - middle);
-                Graphics.Draw(Button.targetSprite, mousePos - middle);
-
+                Graphics.Draw(selectedShopTower.sprite, mousePos - middle);
             }
             // If in play area, orient to the grid spot its on
             else
             {
-                Vector2 ghostGridSpot = FindGridSpot(mousePos);
-                Vector2 ghostGridPos = FindTileScreenPosition(ghostGridSpot);
-                if (!CheckTileOccupied(ghostGridSpot))
-                {
-                    Graphics.Draw(Button.sprite, ghostGridPos);
-                    Graphics.Draw(Button.targetSprite, ghostGridPos);
-                }
-                
-            }
-            // If not on grid:
+                Vector2 ghostGridSpot = FindGridSpot(mousePos); // Turn mouse pos into grid spot
+                Vector2 ghostGridPos = FindTileScreenPosition(ghostGridSpot); // Turn grid spot into screen position
 
-            // If on grid:
+                Graphics.Draw(selectedShopTower.sprite, ghostGridPos);
+
+
+            }
+        }
+        public void PlaceTower()
+        {
 
         }
         // Game ending
@@ -447,10 +460,7 @@ namespace MohawkGame2D
 
             }
         }
-        public void tempShop()
-        {
-            Console.WriteLine("you clicked it ");
-        }
+        
 
         // Pausing
         public void GamePause() // Set flag for pausing game in update loop
