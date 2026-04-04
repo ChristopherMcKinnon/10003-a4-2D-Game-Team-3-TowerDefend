@@ -144,6 +144,13 @@ namespace MohawkGame2D
             //Console.WriteLine(selectedShopTower);
 
             // ===================================================================
+
+            // Set background colour
+            Game.selectedBGC = Game.baseBGC;
+            if (selectedShopTower != null)
+            {
+                Game.selectedBGC = Game.towerPlaceBGC;
+            }
             mousePos = Input.GetMousePosition(); // Set global mouse pos
             this.Controls.Update();
 

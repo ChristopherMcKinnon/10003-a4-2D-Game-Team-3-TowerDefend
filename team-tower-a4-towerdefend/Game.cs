@@ -10,6 +10,9 @@ namespace MohawkGame2D
         // Place your variables here:
         public Vector2 windowSize;
         public Vector2 windowCentre;
+        public Color selectedBGC;
+        public Color baseBGC;
+        public Color towerPlaceBGC;
         string windowTitle;
         int windowFPS;
         Scene Scene;
@@ -24,6 +27,9 @@ namespace MohawkGame2D
             windowTitle = "Tower Defend Game By Christopher, Jose, and Olsen";
             windowFPS = 60;
 
+            baseBGC = new Color(50, 50, 100);
+            towerPlaceBGC = new Color(50, 0, 50);
+            selectedBGC = baseBGC;
             // Window
 
             Window.SetSize((int)windowSize.X, (int)windowSize.Y);
@@ -34,7 +40,7 @@ namespace MohawkGame2D
 
         public void Update()
         {
-            Window.ClearBackground(new Color(50, 50, 100));
+            Window.ClearBackground(selectedBGC);
             Scene.Update();
         }
     }
