@@ -74,13 +74,13 @@ namespace MohawkGame2D
             this.Player = new Player(this); // Player must be loaded after textures because it has a texture
 
             // Set play area
-            playAreaWidth = 12;
-            playAreaHeight = 12;
+            playAreaWidth = 7;
+            playAreaHeight = 7;
             playArea = new TileEntity[playAreaWidth][];
             shopWidth = 288; // The amount of space given between the edge of the screen and the play area
             shopIndentHeight = 192; // The amount of space between the top of the screen and the shop (shop exclusive indent)
             gridTileSize = 32; // Square
-            graphicsSize = 3;
+            graphicsSize = 5;
 
             towerCommonCost = 50;
             towerTrishotCost = 175;
@@ -135,7 +135,7 @@ namespace MohawkGame2D
 
 
             SetMovementPaths();
-            ReplaceTile(Player, new Vector2(7, 3));
+            ReplaceTile(Player, Player.playerPos);
         }
         public void Update() // Control all things within the scene
         {
@@ -184,10 +184,12 @@ namespace MohawkGame2D
                 SpawnEnemies();
 
                 
-                
-                // UI Elements
-                DrawShop();
-                DrawMoney();
+                if (!gameOver)
+                {
+                    // UI Elements
+                    DrawShop();
+                    DrawMoney();
+                }
                 
                 //DrawEnemyCount();
             }
@@ -213,10 +215,7 @@ namespace MohawkGame2D
                 }
             }
             // Process Game End
-            if (gameOver)
-            {
-                GameEnd();
-            }
+            
 
 
         }
@@ -343,18 +342,8 @@ namespace MohawkGame2D
         public void SetMovementPaths() // Not finished
         {
             Vector2[] moveTileMap = [// Ordered in rows
-                new Vector2(11, 0), 
-                new Vector2(0,1), new Vector2(1,1), new Vector2(2,1), new Vector2(3,1), new Vector2(4,1), new Vector2(5,1), new Vector2(6,1), new Vector2(7,1), new Vector2(8,1), new Vector2(9,1), /*new Vector2(10,1) TEMP REMOVE ,*/ new Vector2(11,1),
-                new Vector2(0,2), new Vector2(11,2),
-                new Vector2(0,3), new Vector2(1,3), new Vector2(2,3), new Vector2(3,3), new Vector2(8,3), new Vector2(9,3), new Vector2(11,3),
-                new Vector2(9,4), new Vector2(11,4),
-                new Vector2(0,5), new Vector2(1,5), new Vector2(2,5), new Vector2(9,5), new Vector2(11,5),
-                new Vector2(0,6), new Vector2(2,6), new Vector2(9,6), new Vector2(10,6), new Vector2(11,6),
-                new Vector2(0,7), new Vector2(2,7),
-                new Vector2(0,8), new Vector2(2,8), new Vector2(3,8), new Vector2(8,8), new Vector2(9,8), new Vector2(10,8), new Vector2(11,8),
-                new Vector2(0,9), new Vector2(11,9),
-                new Vector2(0,10), new Vector2(1,10),new Vector2(2,10),new Vector2(3,10),new Vector2(4,10),new Vector2(5,10),new Vector2(6,10),new Vector2(7,10),new Vector2(8,10),new Vector2(9,10),new Vector2(10,10),new Vector2(11,10),
-                new Vector2(0,11)
+                new Vector2(5,6), new Vector2(5, 5),
+                new Vector2(4,5),
             ];
             for (int i = 0; i < moveTileMap.Length; i++)
             {
@@ -425,20 +414,6 @@ namespace MohawkGame2D
 
             }
         }
-        // Game ending
-        public void GameEnd() // Should always be called within the update loop
-        {
-            if (!gameOver) // Only runs once at the end of the game
-            {
-                gameOver = true; // Permanently set to true past this point
-            }
-
-            // Add all entities to the remove queue (this happens every frame after gameOver set to true in this case (considering Update();)
-            foreach (Entity entity in entities)
-            {
-                RemoveEntity(entity);
-            }
-        }
 
         // UI related
         public void DrawEnemyCount()
@@ -455,21 +430,39 @@ namespace MohawkGame2D
         }
         public void DrawMoney()
         {
+            int tileSize = GetTileSize();
             Graphics.Scale = graphicsSize;
             Graphics.Draw(textures["Money"], new Vector2(0, 0));
-            Text.Draw($"{Player.money}", new Vector2(50, 50));
+            Text.Draw($"${Player.money}", new Vector2(tileSize*1, 50));
         }
         public void DrawShop()
         {
+            int tileSize = GetTileSize();
             for (int i = 0; i < shopButtons.Length; i++)
             {
 
                 // Set shop button text
-                Text.Draw($"${shopButtons[i].moneyCost}", new Vector2(100, shopIndentHeight + tileSize/3 + (i * tileSize)));
+                Text.Draw($"${shopButtons[i].moneyCost}", new Vector2(tileSize*1, shopIndentHeight + tileSize/3 + (i * tileSize)));
 
             }
         }
-        
+
+        // Game ending
+        public void GameEnd() // Should always be called within the update loop
+        {
+            if (!gameOver) // Only runs once at the end of the game
+            {
+                gameOver = true; // Permanently set to true past this point
+            }
+
+            // Add all entities to the remove queue (this happens every frame after gameOver set to true in this case (considering Update();)
+            
+            foreach (Entity entity in entities)
+            {
+                RemoveEntity(entity);
+            }
+            
+        }
 
         // Pausing
         public void GamePause() // Set flag for pausing game in update loop

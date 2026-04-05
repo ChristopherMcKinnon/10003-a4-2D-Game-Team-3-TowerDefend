@@ -8,11 +8,15 @@ namespace MohawkGame2D
     internal class Player : TileEntity
     {
         public float money;
+        public float health;
+        public Vector2 playerPos;
 
         public Player(Scene setScene) : base(setScene)
         {
             this.sprite = Scene.textures["TilePlayer"];
             this.money = 200f;
+            this.health = 2;
+            this.playerPos = new Vector2(1, 0);
         }
 
 
@@ -43,6 +47,14 @@ namespace MohawkGame2D
         public void DetractMoney(float money)
         {
             this.money -= money;
+        }
+        public void GetHit()
+        {
+            this.health -= 1;
+            if (this.health <= 0)
+            {
+                Scene.GameEnd();
+            }
         }
         
 

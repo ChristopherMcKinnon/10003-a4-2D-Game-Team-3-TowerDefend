@@ -20,22 +20,22 @@ namespace MohawkGame2D
         public Vector2 currentTileGridSpot;
         public float graphicsSize;
         public Vector2 centrePos;
-
         public bool hitMid;
 
         public Enemy(Scene setScene) : base(setScene)
         {
             tilePathMoved = new List<TileEntity>(); // All tiles previously moved on (touched)
             hitMid = false; // Flag for hitting the middle of the movement square
-            graphicsSize = 2f;
+            graphicsSize = 2.5f;
             this.sprite = Scene.textures["EnemyCommon"];
             this.healthFactor = 1f;
             this.health = 10f * healthFactor;
-            this.moveSpeed = 100f;
+            this.moveSpeed = 40f;
             this.velocity = new Vector2(moveSpeed, moveSpeed); // Moves at the same pace in all cardinal directions
             this.direction = new Vector2(-1, 1);
+            this.spawnPos = new Vector2(5, 6);
 
-            if (Scene.playArea[11][1] is TileMovement MovementTile)
+            if (Scene.playArea[(int)this.spawnPos.X][(int)this.spawnPos.Y] is TileMovement MovementTile)
             {
                 nextTile = MovementTile;
             }
@@ -60,7 +60,7 @@ namespace MohawkGame2D
         }
         public void Spawn()
         {
-            this.position = Scene.GetTileCentreScreen(Scene.playArea[11][0]); // Temp set spawn to top right
+            this.position = Scene.GetTileCentreScreen(Scene.playArea[(int)this.spawnPos.X][(int)this.spawnPos.Y]); // Temp set spawn to top right
             this.centrePos = position - GetSize()/2;
 
 
@@ -99,9 +99,12 @@ namespace MohawkGame2D
 
 
                 }
-                if (Tile is Player PlayerTile) // Hit the player base
+                // Check if hit the player
+                if (Tile is Player PlayerTile)
                 {
                     Scene.RemoveEntity(this);
+                    Scene.Player.GetHit();
+                    Console.WriteLine($"Player health: {Scene.Player.health}");
                 }
                 if (tilePathMoved.Contains(currentTile)) // Check if in enemy's path list
                 {
