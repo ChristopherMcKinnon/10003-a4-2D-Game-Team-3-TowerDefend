@@ -342,7 +342,9 @@ namespace MohawkGame2D
         public void SetMovementPaths() // Not finished
         {
             Vector2[] moveTileMap = [// Ordered in rows
-                new Vector2(5,6), new Vector2(5, 5),
+
+                // Enemy class automatically sets the first movement tile (eg. new Vector2(5, 6); )
+                new Vector2(5, 5),
                 new Vector2(4,5),
             ];
             for (int i = 0; i < moveTileMap.Length; i++)

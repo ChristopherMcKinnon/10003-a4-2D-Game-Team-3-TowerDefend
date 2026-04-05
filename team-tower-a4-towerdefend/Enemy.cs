@@ -35,6 +35,7 @@ namespace MohawkGame2D
             this.direction = new Vector2(-1, 1);
             this.spawnPos = new Vector2(5, 6);
 
+            Scene.ReplaceTile(new TileMovement(Scene), spawnPos);
             if (Scene.playArea[(int)this.spawnPos.X][(int)this.spawnPos.Y] is TileMovement MovementTile)
             {
                 nextTile = MovementTile;
