@@ -59,6 +59,14 @@ namespace MohawkGame2D
         {
             return sprite.Size * graphicsSize;
         }
+        public Vector2 FindCentreOnScreen()
+        {
+            return this.position + (GetSize()/2);
+        }
+        public Vector2 FindCentre()
+        {
+            return GetSize()/2;
+        }
         public void Spawn()
         {
             this.position = Scene.GetTileCentreScreen(Scene.playArea[(int)this.spawnPos.X][(int)this.spawnPos.Y]); // Temp set spawn to top right

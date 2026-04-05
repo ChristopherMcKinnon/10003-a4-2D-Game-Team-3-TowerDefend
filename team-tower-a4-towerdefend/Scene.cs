@@ -65,6 +65,7 @@ namespace MohawkGame2D
                 {"Button", Graphics.LoadTexture("..\\..\\..\\..\\..\\10003-a4-2D-Game-Team-3-TowerDefend\\team-tower-a4-towerdefend\\Assets\\Button.png")},
                 {"ButtonCover", Graphics.LoadTexture("..\\..\\..\\..\\..\\10003-a4-2D-Game-Team-3-TowerDefend\\team-tower-a4-towerdefend\\Assets\\ButtonCover.png")},
                 {"Money", Graphics.LoadTexture("..\\..\\..\\..\\..\\10003-a4-2D-Game-Team-3-TowerDefend\\team-tower-a4-towerdefend\\Assets\\Money.png")},
+                {"Bullet", Graphics.LoadTexture("..\\..\\..\\..\\..\\10003-a4-2D-Game-Team-3-TowerDefend\\team-tower-a4-towerdefend\\Assets\\Bullet.png")},
 
             };
 
@@ -345,7 +346,7 @@ namespace MohawkGame2D
 
                 // Enemy class automatically sets the first movement tile (eg. new Vector2(5, 6); )
                 new Vector2(5, 5),
-                new Vector2(4,5),
+                new Vector2(4,5), new Vector2(3,5),new Vector2(3,4),new Vector2(3,3),
             ];
             for (int i = 0; i < moveTileMap.Length; i++)
             {
