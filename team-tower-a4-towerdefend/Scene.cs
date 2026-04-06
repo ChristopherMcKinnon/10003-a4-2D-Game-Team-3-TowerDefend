@@ -133,8 +133,8 @@ namespace MohawkGame2D
                 AddEntity(shopButtons[i]);
                 
             }
-
-
+            Enemy enemyRef = new Enemy(this);
+            ReplaceTile(new TileMovement(this), enemyRef.spawnPos);
             SetMovementPaths();
             ReplaceTile(Player, Player.playerPos);
         }
@@ -143,7 +143,7 @@ namespace MohawkGame2D
             //BUG TESTING ZONE !!! CAUTION =======================================
 
             //Console.WriteLine(selectedShopTower);
-
+            
             // ===================================================================
 
             // Set background colour
@@ -345,8 +345,12 @@ namespace MohawkGame2D
             Vector2[] moveTileMap = [// Ordered in rows
 
                 // Enemy class automatically sets the first movement tile (eg. new Vector2(5, 6); )
-                new Vector2(5, 5),
-                new Vector2(4,5), new Vector2(3,5),new Vector2(3,4),new Vector2(3,3),
+                new Vector2(5, 1), new Vector2(5, 2), new Vector2(5, 3), new Vector2(5, 4), new Vector2(5, 5),
+                new Vector2(4, 1),
+                new Vector2(3, 1), new Vector2(3, 2), new Vector2(3, 3), new Vector2(3, 4), new Vector2(3, 5), new Vector2(3, 6),
+                new Vector2(2, 6),
+                new Vector2(1, 6), new Vector2(1, 5), new Vector2(1, 4), new Vector2(1, 3),new Vector2(1, 2),new Vector2(1, 1),
+
             ];
             for (int i = 0; i < moveTileMap.Length; i++)
             {
@@ -416,6 +420,7 @@ namespace MohawkGame2D
 
 
             }
+            Text.Draw("BUILD MODE", new Vector2(Game.windowSize.X/2-200f, Game.windowSize.Y-200f));
         }
 
         // UI related

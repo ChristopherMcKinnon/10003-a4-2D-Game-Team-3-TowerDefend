@@ -18,7 +18,6 @@ namespace MohawkGame2D
         public TileEntity nextTile;
         public TileEntity currentTile;
         public Vector2 currentTileGridSpot;
-        public float graphicsSize;
         public Vector2 centrePos;
         public bool hitMid;
 
@@ -26,7 +25,7 @@ namespace MohawkGame2D
         {
             tilePathMoved = new List<TileEntity>(); // All tiles previously moved on (touched)
             hitMid = false; // Flag for hitting the middle of the movement square
-            graphicsSize = 2.5f;
+            this.graphicsSize = 2.5f;
             this.sprite = Scene.textures["EnemyCommon"];
             this.healthFactor = 1f;
             this.health = 10f * healthFactor;
@@ -35,7 +34,7 @@ namespace MohawkGame2D
             this.direction = new Vector2(-1, 1);
             this.spawnPos = new Vector2(5, 6);
 
-            Scene.ReplaceTile(new TileMovement(Scene), spawnPos);
+            
             if (Scene.playArea[(int)this.spawnPos.X][(int)this.spawnPos.Y] is TileMovement MovementTile)
             {
                 nextTile = MovementTile;
@@ -53,39 +52,27 @@ namespace MohawkGame2D
         {
             Vector2 size = GetSize();
             Graphics.Scale = graphicsSize;
-            Graphics.Draw(sprite, this.centrePos);
+            Graphics.Draw(sprite, this.position-this.FindCentre());
         }
-        public Vector2 GetSize()
-        {
-            return sprite.Size * graphicsSize;
-        }
-        public Vector2 FindCentreOnScreen()
-        {
-            return this.position + (GetSize()/2);
-        }
-        public Vector2 FindCentre()
-        {
-            return GetSize()/2;
-        }
+        
         public void Spawn()
         {
-            this.position = Scene.GetTileCentreScreen(Scene.playArea[(int)this.spawnPos.X][(int)this.spawnPos.Y]); // Temp set spawn to top right
-            this.centrePos = position - GetSize()/2;
+            this.position = Scene.playArea[(int)this.spawnPos.X][(int)this.spawnPos.Y].FindCentreOnScreen(); // Temp set spawn to top right
 
 
         }
         public void Move()
         {
-            SetDirection(Vector2.Normalize(Scene.GetTileCentreScreen(nextTile) - this.position));
+            SetDirection(Vector2.Normalize(nextTile.FindCentreOnScreen() - this.position));
             this.position += direction * velocity * Time.DeltaTime;
-            this.centrePos = position - GetSize() / 2;
         }
         public void SetDirection(Vector2 setDirection)
         {
             this.direction = setDirection;
         }
-        public void GetHit()
+        public void GetHit(float damage)
         {
+            health -= damage;
             if (health <= 0)
             {
                 Scene.RemoveEntity(this);

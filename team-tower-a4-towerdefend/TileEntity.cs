@@ -10,7 +10,7 @@ namespace MohawkGame2D
 
         public TileEntity(Scene setScene) : base(setScene)
         {
-
+            this.graphicsSize = Scene.graphicsSize;
         }
         
     }

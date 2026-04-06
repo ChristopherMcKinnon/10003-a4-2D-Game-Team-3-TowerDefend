@@ -13,17 +13,19 @@ namespace MohawkGame2D
         public Vector2 velocity;
         public Vector2 direction;
         public float moveSpeed;
-        
+        public float graphicsSize;
         public float damage;
-        public Bullet(Scene setScene, Entity setOwner, Enemy setTarget) : base(setScene)
+        public Bullet(Scene setScene, Entity setOwner, Enemy setTarget, float setDamage, float setBulletSize, float setBulletSpeed) : base(setScene)
         {
             this.sprite = Scene.textures["Bullet"];
-            this.moveSpeed = 400f;
+            this.damage = setDamage;
+            this.moveSpeed = setBulletSpeed;
             this.Owner = setOwner;
             this.Target = setTarget;
-            this.position = Owner.position;
+            this.position = Owner.FindCentreOnScreen();
             this.direction = Vector2.Normalize(Target.position - position);
             this.velocity = this.direction * moveSpeed;
+            this.graphicsSize = setBulletSize;
         }
         public override void Update()
         {
@@ -32,8 +34,8 @@ namespace MohawkGame2D
         }
         public override void StdDraw()
         {
-            Graphics.Scale = 5;
-            Graphics.Draw(sprite, position);
+            Graphics.Scale = graphicsSize;
+            Graphics.Draw(sprite, this.position - this.FindCentre());
         }
         public void Move()
         {
@@ -42,14 +44,17 @@ namespace MohawkGame2D
         }
         public void CheckHit()
         {
-            if (Vector2.DistanceSquared(this.position, Target.FindCentreOnScreen())<= Target.FindCentre().X)
+            float targetCentre = Target.FindCentre().X; // Assumes square
+            if (Vector2.DistanceSquared(this.position, Target.position) <= targetCentre*targetCentre)
             {
                 Scene.RemoveEntity(this);
+                Target.GetHit(this.damage);
             }
         }
         public void HandleOutOfBounds()
         {
             
         }
+        
     }
 }

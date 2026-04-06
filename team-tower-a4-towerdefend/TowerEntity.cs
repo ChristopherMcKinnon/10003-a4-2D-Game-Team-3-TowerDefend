@@ -9,6 +9,9 @@ namespace MohawkGame2D
     {
         public float moneyCost;
         public float shotRadius;
+        public float bulletSize;
+        public float bulletSpeed;
+        public float damage;
         public Enemy Target;
         public List<Enemy> withinRange = new List<Enemy>();
         public List<float> enemyDistances;
@@ -18,9 +21,7 @@ namespace MohawkGame2D
         public TowerEntity(Scene setScene, float setMoneyCost) : base(setScene)
         {
             this.moneyCost = setMoneyCost;
-            this.shotRadius = 500f;
             this.Target = null;
-            this.shotCooldown = 0.25f;
             this.shotInterval = 0f;
         }
         public override void Update()
@@ -32,7 +33,7 @@ namespace MohawkGame2D
         {
             Draw.Circle(position, shotRadius);
         }
-        public void Shoot()
+        public virtual void Shoot()
         {
             shotInterval -= Time.DeltaTime;
             if (shotInterval <= 0)
@@ -41,15 +42,16 @@ namespace MohawkGame2D
                 {
                     if (withinRange.Count > 0)
                     {
-                        Scene.AddEntity(new Bullet(Scene, this, Target));
+                        Scene.AddEntity(new Bullet(Scene, this, Target, damage, bulletSize, bulletSpeed));
                         shotInterval = shotCooldown;
                     }
                 }
             }
         }
-        public void CheckInRadius() // If any enemies are within radius, then make sure they are in the list. If not, make sure they are not in the list
+        public virtual void CheckInRadius() // If any enemies are within radius, then make sure they are in the list. If not, make sure they are not in the list
         {
             float closest = shotRadius * shotRadius;
+
             foreach (Entity Entity in Scene.entities)
             {
                 if (Entity is Enemy Enemy)
@@ -57,9 +59,12 @@ namespace MohawkGame2D
                     float distance = Vector2.DistanceSquared(this.position, Enemy.FindCentreOnScreen());
                     if (distance < shotRadius * shotRadius)
                     {
-                        if (!withinRange.Contains(Enemy))
+                        if (withinRange != null)
                         {
-                            withinRange.Add(Enemy);
+                            if (!withinRange.Contains(Enemy))
+                            {
+                                withinRange.Add(Enemy);
+                            }
                         }
                         // Check closest enemy
                         if (distance < closest)

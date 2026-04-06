@@ -9,14 +9,14 @@ namespace MohawkGame2D
     {
         public TileMovement(Scene setScene) : base(setScene)
         {
-            sprite = Scene.textures["MovementTile"];
+            this.sprite = Scene.textures["MovementTile"];
         }
         public override void Update()
         {
         }
         public override void StdDraw()
         {
-            Graphics.Scale = Scene.graphicsSize;
+            Graphics.Scale = this.graphicsSize;
             Graphics.Draw(sprite, this.position);
         }
         

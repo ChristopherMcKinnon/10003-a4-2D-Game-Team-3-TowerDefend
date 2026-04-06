@@ -11,6 +11,10 @@ namespace MohawkGame2D
         public TowerTrishot(Scene setScene, float setMoneyCost) : base(setScene, setMoneyCost) // Entity requires Scene
         {
             this.sprite = Scene.textures["TowerTrishot"];
+            this.shotRadius = 250f;
+            this.bulletSize = 5f;
+            this.damage = 1.5f;
+            this.shotCooldown = 0.75f;
         }
 
         public override void StdDraw()

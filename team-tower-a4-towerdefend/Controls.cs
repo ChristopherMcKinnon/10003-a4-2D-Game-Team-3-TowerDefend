@@ -18,6 +18,7 @@ namespace MohawkGame2D
         {
             this.mousePos = Scene.mousePos;
             GameStateChanges();
+            CheckRemoveShopSelection();
             CheckPlaceTower();
             CheckTile();
         }
@@ -28,6 +29,13 @@ namespace MohawkGame2D
                 Vector2 gridSpot = Scene.CheckMouseHoverTile();
                 Console.Write(gridSpot);
                 //Scene.AddTower(new TowerCommon(Scene), gridSpot);
+            }
+        }
+        public void CheckRemoveShopSelection()
+        {
+            if (Input.IsMouseButtonPressed(MouseInput.Right))
+            {
+                Scene.selectedShopTower = null;
             }
         }
         public void CheckPlaceTower()
