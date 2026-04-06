@@ -71,9 +71,7 @@ namespace MohawkGame2D
 
             // Load all audio files
 
-            // Set Player
-            this.Player = new Player(this); // Player must be loaded after textures because it has a texture
-
+            
             // Set play area
             playAreaWidth = 7;
             playAreaHeight = 7;
@@ -117,11 +115,15 @@ namespace MohawkGame2D
             spawnTimer = 2.5f;
             spawnInterval = 0;
 
+            // Set Player
+            this.Player = new Player(this); // Player must be loaded after textures because it has a texture
+
+
             // Init shop buttons
             tileSize = GetTileSize();
             shopButtons = [
                 new ShopButton(this, new TowerCommon(this, towerCommonCost), towerCommonCost, KeyboardInput.One),
-                new ShopButton(this, new TowerTrishot(this, towerTrishotCost), towerTrishotCost, KeyboardInput.Two),
+                //new ShopButton(this, new TowerTrishot(this, towerTrishotCost), towerTrishotCost, KeyboardInput.Two),
                 new ShopButton(this, new TowerSniper(this, towerSniperCost), towerSniperCost, KeyboardInput.Three),
                 ];
             // Set shop button variables 

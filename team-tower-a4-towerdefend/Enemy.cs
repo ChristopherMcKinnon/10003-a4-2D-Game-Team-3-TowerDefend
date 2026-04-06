@@ -29,7 +29,8 @@ namespace MohawkGame2D
             this.sprite = Scene.textures["EnemyCommon"];
             this.healthFactor = 1f;
             this.health = 10f * healthFactor;
-            this.moveSpeed = 40f;
+            this.moveSpeed = 200f;
+            this.moneyReward = 15f;
             this.velocity = new Vector2(moveSpeed, moveSpeed); // Moves at the same pace in all cardinal directions
             this.direction = new Vector2(-1, 1);
             this.spawnPos = new Vector2(5, 6);
@@ -51,7 +52,7 @@ namespace MohawkGame2D
         public override void StdDraw()
         {
             Vector2 size = GetSize();
-            Graphics.Scale = graphicsSize;
+            Graphics.Scale = this.graphicsSize;
             Graphics.Draw(sprite, this.position-this.FindCentre());
         }
         
@@ -77,6 +78,7 @@ namespace MohawkGame2D
             {
                 Scene.RemoveEntity(this);
                 Scene.Player.AddMoney(moneyReward);
+
             }
         }
         public void CheckCurrentTile()

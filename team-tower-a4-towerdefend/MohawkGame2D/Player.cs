@@ -17,16 +17,17 @@ namespace MohawkGame2D
             this.money = 200f;
             this.health = 2;
             this.playerPos = new Vector2(1, 0);
+            this.graphicsSize = Scene.graphicsSize;
         }
 
 
         public override void Update()
         {
-
+            //Console.WriteLine($"Pos: {this.position}, Centre: {this.FindCentreOnScreen()}");
         }
         public override void StdDraw()
         {
-            Graphics.Scale = Scene.graphicsSize;
+            Graphics.Scale = this.graphicsSize;
             Graphics.Draw(sprite, this.position);
         }
         public void AddMoney(float money)

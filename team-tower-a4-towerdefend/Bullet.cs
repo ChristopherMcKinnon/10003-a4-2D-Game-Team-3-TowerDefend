@@ -8,14 +8,14 @@ namespace MohawkGame2D
     internal class Bullet : Entity
     {
 
-        public Entity Owner;
+        public TowerEntity Owner;
         public Enemy Target;
         public Vector2 velocity;
         public Vector2 direction;
         public float moveSpeed;
         public float graphicsSize;
         public float damage;
-        public Bullet(Scene setScene, Entity setOwner, Enemy setTarget, float setDamage, float setBulletSize, float setBulletSpeed) : base(setScene)
+        public Bullet(Scene setScene, TowerEntity setOwner, Enemy setTarget, float setDamage, float setBulletSize, float setBulletSpeed) : base(setScene)
         {
             this.sprite = Scene.textures["Bullet"];
             this.damage = setDamage;
@@ -23,7 +23,7 @@ namespace MohawkGame2D
             this.Owner = setOwner;
             this.Target = setTarget;
             this.position = Owner.FindCentreOnScreen();
-            this.direction = Vector2.Normalize(Target.position - position);
+            this.direction = Vector2.Normalize(this.Target.position - this.position);
             this.velocity = this.direction * moveSpeed;
             this.graphicsSize = setBulletSize;
         }
@@ -39,6 +39,8 @@ namespace MohawkGame2D
         }
         public void Move()
         {
+            this.direction = Vector2.Normalize(Target.position - position);
+            this.velocity = this.direction * moveSpeed;
             this.position += velocity * Time.DeltaTime;
             //Console.WriteLine(this.direction);
         }

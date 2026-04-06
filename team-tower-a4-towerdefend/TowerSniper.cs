@@ -17,7 +17,12 @@ namespace MohawkGame2D
             this.damage = 5f;
             this.shotCooldown = 2.5f;
         }
-        
+        public override void Update()
+        {
+            CheckInRadius();
+            CheckFurthest();
+            Shoot();
+        }
         public override void StdDraw()
         {
             Graphics.Scale = Scene.graphicsSize;
