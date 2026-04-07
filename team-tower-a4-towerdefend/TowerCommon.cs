@@ -14,10 +14,12 @@ namespace MohawkGame2D
             this.shotRadius = 300f;
             this.bulletSize = 10f;
             this.bulletSpeed = 300f;
-            this.damage = 0f;
+            this.damage = 2f;
             this.shotCooldown = 1f;
+            this.shotSpreadAngle = 15f;
+
         }
-        
+
         public override void StdDraw()
         {
             Graphics.Scale = Scene.graphicsSize;

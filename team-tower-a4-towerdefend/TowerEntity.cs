@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Numerics;
+using System.Linq;
 
 namespace MohawkGame2D
 {
@@ -17,6 +18,8 @@ namespace MohawkGame2D
         public List<float> enemyDistances;
         public float shotCooldown;
         public float shotInterval;
+        public float shotSpreadAngle;
+        public float shotSpreadRadians;
         public Vector2 centre;
 
         public TowerEntity(Scene setScene, float setMoneyCost) : base(setScene)
@@ -24,7 +27,6 @@ namespace MohawkGame2D
             this.moneyCost = setMoneyCost;
             this.Target = null;
             this.shotInterval = 0f;
-            
         }
         public override void Update()
         {
@@ -37,13 +39,19 @@ namespace MohawkGame2D
         }
         public virtual void Shoot()
         {
+            this.shotSpreadRadians = this.shotSpreadAngle * (float)(Math.PI * 180f);
             shotInterval -= Time.DeltaTime;
             if (shotInterval <= 0)
             {
-                if (this.Target != null)
+                if (this.Target != null && Scene.entities.Contains(this.Target) && !Scene.removeEntityQueue.Contains(this.Target))
                 {
-                    Scene.AddEntity(new Bullet(Scene, this, Target, damage, bulletSize, bulletSpeed));
+                    Scene.AddEntity(new Bullet(Scene, this, Target, damage, bulletSize, bulletSpeed, shotSpreadRadians));
                     shotInterval = shotCooldown;
+                    this.Target = null;
+                    foreach (Enemy Enemy in withinRange.ToList())
+                    {
+                        withinRange.Remove(Enemy);
+                    }
                 }
             }
         }
@@ -56,19 +64,22 @@ namespace MohawkGame2D
             {
                 if (Entity is Enemy Enemy)
                 {
-                    float distance = Vector2.Distance(this.centre, Enemy.position);
-                    if (distance < shotRadius) // Check if enemy is within range
+                    if (Enemy.isAlive == true)
                     {
-                        if (!withinRange.Contains(Enemy))
+                        float distance = Vector2.Distance(this.centre, Enemy.position);
+                        if (distance < shotRadius) // Check if enemy is within range
                         {
-                            withinRange.Add(Enemy);
+                            if (!withinRange.Contains(Enemy))
+                            {
+                                withinRange.Add(Enemy);
+                            }
                         }
-                    }
-                    else
-                    {
-                        if (withinRange.Contains(Enemy))
+                        else
                         {
-                            withinRange.Remove(Enemy);
+                            if (withinRange.Contains(Enemy))
+                            {
+                                withinRange.Remove(Enemy);
+                            }
                         }
                     }
                 }

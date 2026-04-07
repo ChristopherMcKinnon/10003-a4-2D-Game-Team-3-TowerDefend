@@ -20,11 +20,13 @@ namespace MohawkGame2D
         public Vector2 currentTileGridSpot;
         public Vector2 centrePos;
         public bool hitMid;
+        public bool isAlive;
 
         public Enemy(Scene setScene) : base(setScene)
         {
             tilePathMoved = new List<TileEntity>(); // All tiles previously moved on (touched)
             hitMid = false; // Flag for hitting the middle of the movement square
+            isAlive = true;
             this.graphicsSize = 2.5f;
             this.sprite = Scene.textures["EnemyCommon"];
             this.healthFactor = 1f;
@@ -74,8 +76,9 @@ namespace MohawkGame2D
         public void GetHit(float damage)
         {
             health -= damage;
-            if (health <= 0)
+            if (health <= 0 )
             {
+                this.isAlive = false;
                 Scene.RemoveEntity(this);
                 Scene.Player.AddMoney(moneyReward);
 

@@ -123,7 +123,7 @@ namespace MohawkGame2D
             tileSize = GetTileSize();
             shopButtons = [
                 new ShopButton(this, new TowerCommon(this, towerCommonCost), towerCommonCost, KeyboardInput.One),
-                //new ShopButton(this, new TowerTrishot(this, towerTrishotCost), towerTrishotCost, KeyboardInput.Two),
+                new ShopButton(this, new TowerTrishot(this, towerTrishotCost), towerTrishotCost, KeyboardInput.Two),
                 new ShopButton(this, new TowerSniper(this, towerSniperCost), towerSniperCost, KeyboardInput.Three),
                 ];
             // Set shop button variables 

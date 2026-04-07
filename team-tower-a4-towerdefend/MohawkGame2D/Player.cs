@@ -15,7 +15,7 @@ namespace MohawkGame2D
         {
             this.sprite = Scene.textures["TilePlayer"];
             this.money = 200f;
-            this.health = 2;
+            this.health = 10;
             this.playerPos = new Vector2(1, 0);
             this.graphicsSize = Scene.graphicsSize;
         }
